@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Questions</title>
+</head>
+
+<body>
+    <h1>My Questions</h1>
+    <!-- Display the titles of questions for the logged-in user -->
+    <h2>My Questions:</h2>
+    <ul>
+        {% for question in my_questions %}
+        <li><a href="{% url 'question' %}?question_id={{question.id }}">{{ question.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <h1>Users</h1>
+    <ul>
+    {% for user in users %}
+        <li>
+            <a href="{% url 'profile' %}?username={{ user.user.username }}">{{ user.user.username }}</a>
+            <!-- Display usernames as links that redirect to profile.html with the username as a parameter,
+                 but skip the logged-in user -->
+            <span>Karma: {{ user.karma }}</span>
+            <!-- Display karma alongside the username -->
+            <span>Follow status: {% if user.is_following %}Following{% else %}Not Following{% endif %}</span>
+            <!-- Display follow status -->
+            {% if not user.user.username == request.user.username %}
+                {% if user.is_following %}
+                    <a href="{% url 'unfollow' user.user.username %}">Unfollow</a>
+                    <!-- Display unfollow link if currently following -->
+                {% else %}
+                    <a href="{% url 'follow' user.user.username %}">Follow</a>
+                    <!-- Display follow link if not following -->
+                {% endif %}
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'feed' %}">Go back to Feed</a>
+</body>
+</html>

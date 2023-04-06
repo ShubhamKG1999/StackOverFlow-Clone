@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Following Page</title>
+</head>
+<body>
+    <h1>Following</h1>
+    <ul>
+    {% for user in following_users %}
+        <li>
+            <a href="{% url 'profile' %}?username={{ user.following.username }}">{{ user.following.username }}</a>
+            <span>Karma: {{ user.following.stackoverflowuser.karma }}</span>
+        </li>
+    {% empty %}
+        <li>No users being followed.</li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'feed' %}">Go back to Feed</a>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question Details</title>
+</head>
+<body>
+    <h1>Question Details</h1>
+    <h2>{{ question.title }}</h2>
+    <p>{{ question.description }}</p>
+    <p>Asked by: {{ question.user.username }}</p>
+    <p>Created at: {{ question.created_at }}</p>
+
+    <form method="post" action="{% url 'delete_question' question_id=question.id %}">
+        {% csrf_token %}
+        <input type="submit" value="Delete Question">
+    </form>
+
+    <a href="{% url 'edit_question' question_id=question.id %}">Edit Question</a>
+
+    <a href="{% url 'feed' %}">Back to Feed</a>
+</body>
+</html>

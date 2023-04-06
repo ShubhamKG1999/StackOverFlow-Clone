@@ -1,0 +1,20 @@
+<!-- logout.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout</title>
+</head>
+<body>
+    <h1>Logout</h1>
+    <p>Username: {{ username }}</p> <!-- Display the username of the logged-in user -->
+    <p>Email: {{ email }}</p> <!-- Display the email of the logged-in user -->
+    
+    <!-- Add any other information about the logged-in user that you want to display -->
+    
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+    </form>
+</body>
+</html>

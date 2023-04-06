@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Send form data to server using AJAX when a radio button is selected
+            $('input[name=vote]').on('change', function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Get selected vote option
+                var vote = $('input[name=vote]:checked').val();
+
+                // Get CSRF token
+                var csrf_token = $('input[name=csrfmiddlewaretoken]').val();
+
+                // Send form data to server using AJAX
+                $.ajax({
+                    url: $('#vote-form').attr('action'),
+                    type: $('#vote-form').attr('method'),
+                    data: { vote: vote },
+                    headers: { 'X-CSRFToken': csrf_token }, // Include CSRF token in request headers
+                    success: function(data) {
+                        // Update question points on success
+                        $('#question-points').text(data.question_points);
+                    },
+                    error: function() {
+                        alert('An error occurred while processing your vote. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Question Details</h1>
+    <h2>{{ question.title }}</h2>
+    <p>{{ question.description }}</p>
+    <p>Asked by: {{ question.user.username }}</p>
+    <p>Created at: {{ question.created_at }}</p>
+    <p>Question Points: <span id="question-points">{{ question.points }}</span></p>
+
+    <form method="post" action="{% url 'vote_question' question_id=question.id %}" id="vote-form">
+        {% csrf_token %}
+        <label>
+            <input type="radio" name="vote" value="increase"> Increase
+        </label>
+        <label>
+            <input type="radio" name="vote" value="decrease"> Decrease
+        </label>
+    </form>
+
+    <a href="{% url 'feed' %}">Back to Feed</a>
+</body>
+</html>
