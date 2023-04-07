@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Question Details</title>
+{% block script %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // JavaScript
@@ -58,10 +56,10 @@
             });
         });
     </script>
-
+{% endblock %}
 </head>
 
-<body>
+{% block content %}
     <h1>Question Details</h1>
     <h2>{{ question.title }}</h2>
     <p>{{ question.description }}</p>
@@ -83,6 +81,4 @@
     </form>
 
     <a href="{% url 'feed' %}">Back to Feed</a>
-</body>
-
-</html>
+{% endblock %}

@@ -1,28 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Feed Page</title>
-</head>
-<body>
-    <h1>Feed</h1>
-    <a href="{% url 'profile' %}">Go to Profile</a>
-    <br>
+{% extends 'base.html' %}
+
+{% block title %}Stack OverFlow - Where Developers Learn, Share, & Build Careers{% endblock %}
+
+{% block content %}
     <a href="{% url 'users' %}">Go to Users</a>
-    <br>
     <a href="{% url 'following' %}">Go to Following</a>
-    <br>
     <a href="{% url 'followers' %}">Go to Followers</a>
-    <br>
     <a href="{% url 'ask_question' %}">Ask a Question</a>
-    <br>
     <a href="{% url 'my_questions' %}">My Questions</a>
-    <br>
-    <!-- Display the titles of questions in the feed as links -->
     <h2>Questions:</h2>
     <ul>
         {% for question in questions %}
             <li><a href="{% url 'question' %}?question_id={{question.id }}">{{ question.title }}</a></li>
         {% endfor %}
     </ul>
-</body>
-</html>
+
+{% endblock %}

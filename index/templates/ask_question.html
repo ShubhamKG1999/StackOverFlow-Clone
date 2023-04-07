@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Ask a Question</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <h1>Ask a Question</h1>
     <form method="post">
         {% csrf_token %}
@@ -17,5 +14,4 @@
     </form>
     <br>
     <a href="{% url 'feed' %}">Go back to Feed</a>
-</body>
-</html>
+{% endblock %}

@@ -34,3 +34,9 @@ class QuestionVote(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     vote_type = models.IntegerField(choices=((1, 'Upvote'), (-1, 'Downvote'), (0, 'No Vote')), default=0)
     created_at = models.DateTimeField(default=timezone.now)
+
+class QuestionComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    comment_text = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)

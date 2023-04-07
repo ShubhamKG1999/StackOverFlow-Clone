@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Profile Page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <h1>Profile</h1>
     <p>Username: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
@@ -12,5 +9,5 @@
     <p>Questions Answered: {{ user.stackoverflowuser.questions_answered }}</p> <!-- Display questions_answered field value -->
     <p>Join Date: {{ user.stackoverflowuser.join_date }}</p> <!-- Display join_date field value -->
     <a href="{% url 'logout' %}">Logout</a>
-</body>
-</html>
+{% endblock %}
+

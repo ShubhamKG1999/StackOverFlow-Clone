@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import StackOverFlowUser, Follow, Question, QuestionVote
+from .models import StackOverFlowUser, Follow, Question, QuestionVote, QuestionComment
 
 def index(request):
     if request.user.is_authenticated:
@@ -207,15 +207,26 @@ def vote_question(request, question_id):
         # Update the question points based on the selected vote options
         for vote in votes:
             if vote == 'increase':
-                question.points = initial_points
-                question.points += 1
+                # Check if user has already voted and vote_type is 1, then increase by 2
+                if QuestionVote.objects.filter(user=request.user, question=question, vote_type=-1).exists():
+                    question.points += 2
+                else:
+                    question.points += 1
             elif vote == 'decrease':
-                question.points = initial_points
-                question.points -= 1
+                # Check if user has already voted and vote_type is -1, then decrease by 2
+                if QuestionVote.objects.filter(user=request.user, question=question, vote_type=1).exists():
+                    question.points -= 2
+                else:
+                    question.points -= 1
 
         # If no vote option is selected, reset points to initial value
         if not votes:
-            question.points = initial_points
+            if QuestionVote.objects.filter(user=request.user, question=question, vote_type=-1).exists():
+                question.points += 1
+            elif QuestionVote.objects.filter(user=request.user, question=question, vote_type=1).exists():
+                question.points -= 1
+            else:
+                question.points = initial_points
 
         # Save the updated question object
         question.save()
@@ -232,9 +243,7 @@ def vote_question(request, question_id):
 
         question_votes = QuestionVote.objects.all()
 
-# Iterate through the objects and print the vote_type field value
-        for question_vote in question_votes:
-            print(question_vote.vote_type)
+        # Iterate through the objects and print the vote_type field value
 
         # Return the updated question points as a JSON response
         response_data = {'question_points': question.points}
@@ -259,4 +268,23 @@ def get_user_vote(request):
         data = {
             'vote_type': vote_type  # Return the vote type in response data
         }
-        return JsonResponse(data) 
+        return JsonResponse(data)
+    
+def search(request):
+    if request.method == 'GET':
+        query = request.GET.get('query') # Get the value of 'query' from the form submission
+        # Perform search logic based on the query, e.g., querying the database
+        # with the query and retrieving relevant results
+        # You can customize this logic based on your application's requirements
+
+        # Assuming you have a 'Question' model in your Django application
+        questions = Question.objects.filter(title__icontains=query) # Example search logic
+
+        # Render the search results in a template
+        return render(request, 'search_results.html', {'questions': questions, 'query': query})
+    else:
+        # Render the search page if the form is not submitted with GET method
+        return render(request, 'feed.html')
+
+def base(request):
+    return render(request, 'base.html')

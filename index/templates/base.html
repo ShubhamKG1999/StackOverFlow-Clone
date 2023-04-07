@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid black;
+        }
+
+        .logo-img {
+            width: 10rem;
+            height: auto;
+        }
+
+        .search-icon {
+            width: 2rem;
+            height: auto;
+        }
+
+        #search-input {
+            border: none;
+            outline: none;
+        }
+
+        .search-form {
+            flex: 1;
+            border: 1px solid black;
+        }
+    </style>
+    {% block script %}{% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <a href="{% url 'feed' %}">
+            <img src="{% static 'img/logo-stackoverflow.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <form id="search-form" action="{% url 'search' %}" method="GET" class="search-form">
+            <img src="{% static 'img/magnifying-glass.png' %}" alt="Search" class="search-icon">
+            <input id="search-input" type="text" name="query" placeholder="Search...">
+        </form>
+        <a href="{% url 'profile' %}">
+            <img src="{% static 'img/profile-image.png' %}" alt="Profile Image" class="profile-img">
+        </a>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('search-form');
+            var input = document.getElementById('search-input');
+
+            input.addEventListener('keydown', function (event) {
+                if (event.keyCode === 13) { // Check if Enter key is pressed
+                    form.submit(); // Submit the form
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

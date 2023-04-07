@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p>Showing results for: <strong>{{ query }}</strong></p>
+    <ul>
+        {% if questions %}
+            <!-- Display the titles of questions in the search results as links -->
+            {% for question in questions %}
+                <li><a href="{% url 'question' %}?question_id={{ question.id }}">{{ question.title }}</a></li>
+            {% endfor %}
+        {% else %}
+            <li>No results found.</li>
+        {% endif %}
+    </ul>
+    <a href="{% url 'feed' %}">Back to Feed</a>
+{% endblock %}

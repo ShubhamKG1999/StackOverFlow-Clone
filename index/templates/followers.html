@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Followers Page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <h1>Followers</h1>
     <ul>
     {% for user in followers %}
@@ -16,5 +13,4 @@
     {% endfor %}
     </ul>
     <a href="{% url 'feed' %}">Go back to Feed</a>
-</body>
-</html>
+{% endblock %}

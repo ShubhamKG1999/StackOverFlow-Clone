@@ -20,4 +20,6 @@ urlpatterns = [
     path('question/<int:question_id>/edit/', views.edit_question, name='edit_question'),
     path('question/<int:question_id>/vote/', views.vote_question, name='vote_question'),
     path('get_user_vote/', views.get_user_vote, name='get_user_vote'),
+    path('search/', views.search, name='search'),
+    path('base/', views.base, name='base')
 ]

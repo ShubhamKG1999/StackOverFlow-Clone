@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Question Details</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <h1>Question Details</h1>
     <h2>{{ question.title }}</h2>
     <p>{{ question.description }}</p>
@@ -18,5 +15,4 @@
     <a href="{% url 'edit_question' question_id=question.id %}">Edit Question</a>
 
     <a href="{% url 'feed' %}">Back to Feed</a>
-</body>
-</html>
+{% endblock %}
