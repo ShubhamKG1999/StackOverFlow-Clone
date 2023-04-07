@@ -243,3 +243,20 @@ def vote_question(request, question_id):
     # Render the question details page
     context = {'question': question}
     return render(request, 'question.html', context)
+
+def get_user_vote(request):
+    if request.method == 'GET':
+        question_id = request.GET.get('question_id')  # Get question ID from request parameters
+        question = get_object_or_404(Question, id=question_id)  # Fetch the question object
+        
+        # Fetch the vote object for the logged in user and the question
+        try:
+            vote = QuestionVote.objects.get(user=request.user, question=question)
+            vote_type = vote.vote_type  # Get the vote type (1 for increase, -1 for decrease)
+        except QuestionVote.DoesNotExist:
+            vote_type = 0  # If no vote exists, set vote type to 0 (no vote)
+
+        data = {
+            'vote_type': vote_type  # Return the vote type in response data
+        }
+        return JsonResponse(data) 

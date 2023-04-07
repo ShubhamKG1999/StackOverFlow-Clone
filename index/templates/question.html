@@ -7,6 +7,24 @@
     <script>
         // JavaScript
         $(document).ready(function () {
+            // Fetch user's previous vote from server using AJAX
+            $.ajax({
+                url: '{% url 'get_user_vote' %}',  // Replace with your URL for fetching user's previous vote
+                type: 'GET',
+                data: { question_id: '{{ question.id }}' },  // Include question ID in request data
+                success: function (data) {
+                    // Check/uncheck checkboxes based on user's previous vote
+                    if (data.vote_type === 1) {
+                        $('#increase-checkbox').prop('checked', true);
+                    } else if (data.vote_type === -1) {
+                        $('#decrease-checkbox').prop('checked', true);
+                    }
+                },
+                error: function () {
+                    console.error('Failed to fetch user vote.');
+                }
+            });
+
             // Send form data to server using AJAX when a checkbox is selected
             $('input[name=vote]').on('change', function (event) {
                 event.preventDefault(); // Prevent form submission
@@ -55,16 +73,14 @@
     <form method="post" action="{% url 'vote_question' question_id=question.id %}" id="vote-form">
         {% csrf_token %}
         <label>
-            <input type="checkbox" name="vote" value="increase"> Increase
+            <input type="checkbox" name="vote" value="increase" id="increase-checkbox"> Increase
         </label>
         <label>
-            <input type="checkbox" name="vote" value="decrease"> Decrease
+            <input type="checkbox" name="vote" value="decrease" id="decrease-checkbox"> Decrease
         </label>
         <input type="hidden" name="initial_points" value="{{ question.points }}">
         <!-- Add a hidden input field to store the initial points value -->
     </form>
-
-
 
     <a href="{% url 'feed' %}">Back to Feed</a>
 </body>
