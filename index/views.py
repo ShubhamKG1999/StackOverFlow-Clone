@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import StackOverFlowUser, Follow, Question
+from .models import StackOverFlowUser, Follow, Question, QuestionVote
 
 def index(request):
     if request.user.is_authenticated:
@@ -207,8 +207,10 @@ def vote_question(request, question_id):
         # Update the question points based on the selected vote options
         for vote in votes:
             if vote == 'increase':
+                question.points = initial_points
                 question.points += 1
             elif vote == 'decrease':
+                question.points = initial_points
                 question.points -= 1
 
         # If no vote option is selected, reset points to initial value
@@ -217,6 +219,22 @@ def vote_question(request, question_id):
 
         # Save the updated question object
         question.save()
+
+        # Retrieve the user object from the request
+        user = request.user
+
+        # Update or create a QuestionVote object for the user and question
+        question_vote, created = QuestionVote.objects.update_or_create(
+            user=user,
+            question=question,
+            defaults={'vote_type': 1 if 'increase' in votes else -1 if 'decrease' in votes else 0}
+        )
+
+        question_votes = QuestionVote.objects.all()
+
+# Iterate through the objects and print the vote_type field value
+        for question_vote in question_votes:
+            print(question_vote.vote_type)
 
         # Return the updated question points as a JSON response
         response_data = {'question_points': question.points}
