@@ -204,22 +204,12 @@ def vote_question(request, question_id):
         votes = request.POST.getlist('vote')
         initial_points = int(request.POST.get('initial_points'))
 
-        # Check if user has already voted for increase or decrease
-        has_voted_increase = 'increase' in votes
-        has_voted_decrease = 'decrease' in votes
-
         # Update the question points based on the selected vote options
         for vote in votes:
             if vote == 'increase':
-                if has_voted_decrease:
-                    question.points += 2
-                else:
-                    question.points += 1
+                question.points += 1
             elif vote == 'decrease':
-                if has_voted_increase:
-                    question.points -= 2
-                else:
-                    question.points -= 1
+                question.points -= 1
 
         # If no vote option is selected, reset points to initial value
         if not votes:
