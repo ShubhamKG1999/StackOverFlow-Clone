@@ -200,19 +200,35 @@ def vote_question(request, question_id):
     question = Question.objects.get(id=question_id)
 
     if request.method == 'POST':
-        # Retrieve the selected vote option from the form data
-        vote = request.POST['vote']
+        # Retrieve the selected vote options and initial points value from the form data
+        votes = request.POST.getlist('vote')
+        initial_points = int(request.POST.get('initial_points'))
 
-        # Update the question points based on the selected vote option
-        if vote == 'increase':
-            question.points += 1
-        elif vote == 'decrease':
-            question.points -= 1
+        # Check if user has already voted for increase or decrease
+        has_voted_increase = 'increase' in votes
+        has_voted_decrease = 'decrease' in votes
+
+        # Update the question points based on the selected vote options
+        for vote in votes:
+            if vote == 'increase':
+                if has_voted_decrease:
+                    question.points += 2
+                else:
+                    question.points += 1
+            elif vote == 'decrease':
+                if has_voted_increase:
+                    question.points -= 2
+                else:
+                    question.points -= 1
+
+        # If no vote option is selected, reset points to initial value
+        if not votes:
+            question.points = initial_points
 
         # Save the updated question object
         question.save()
 
-        # Create a JSON response with the updated question points
+        # Return the updated question points as a JSON response
         response_data = {'question_points': question.points}
         return JsonResponse(response_data)
 
