@@ -1,18 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Question Details</h1>
-    <h2>{{ question.title }}</h2>
-    <p>{{ question.description }}</p>
-    <p>Asked by: {{ question.user.username }}</p>
-    <p>Created at: {{ question.created_at }}</p>
+<h1>Question Details</h1>
+<h2>{{ question.title }}</h2>
+<p>{{ question.description }}</p>
+<p>Asked by: {{ question.user.username }}</p>
+<p>Created at: {{ question.created_at }}</p>
 
-    <form method="post" action="{% url 'delete_question' question_id=question.id %}">
-        {% csrf_token %}
-        <input type="submit" value="Delete Question">
-    </form>
+<form method="post" action="{% url 'delete_question' question_id=question.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Delete Question">
+</form>
 
-    <a href="{% url 'edit_question' question_id=question.id %}">Edit Question</a>
+<a href="{% url 'edit_question' question_id=question.id %}">Edit Question</a>
 
-    <a href="{% url 'feed' %}">Back to Feed</a>
+<h3>Answers</h3>
+<ul>
+    {% for answer in answers %}
+    <li>{{ answer.answer_text }}</li>
+    {% empty %}
+    <li>No answers yet.</li>
+    {% endfor %}
+</ul>
+
+
+<a href="{% url 'feed' %}">Back to Feed</a>
 {% endblock %}

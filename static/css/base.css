@@ -1,0 +1,31 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+}
+
+.logo-img {
+    width: 10rem;
+    height: auto;
+}
+
+.search-icon {
+    width: 2rem;
+    height: auto;
+}
+
+#search-input {
+    border: none;
+    outline: none;
+}
+
+.search-form {
+    flex: 1;
+    border: 1px solid black;
+}

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import StackOverFlowUser, Follow, Question, QuestionVote, QuestionComment
+from .models import StackOverFlowUser, Follow, Question, QuestionVote, QuestionComment, Answer, AnswerVote
 
 def index(request):
     if request.user.is_authenticated:
@@ -63,6 +63,18 @@ def feed(request):
     following_users = Follow.objects.filter(follower=request.user).values_list('following', flat=True)
     # Get the questions of the following users
     questions = Question.objects.filter(user__in=following_users).order_by('-created_at')
+    context = {'questions': questions}
+    return render(request, 'feed.html', context)
+
+@login_required(login_url='index')
+def new(request):
+    questions = Question.objects.order_by('-created_at')
+    context = {'questions': questions}
+    return render(request, 'feed.html', context)
+
+@login_required(login_url='index')
+def top(request):
+    questions = Question.objects.order_by('-points')
     context = {'questions': questions}
     return render(request, 'feed.html', context)
 
@@ -132,10 +144,22 @@ def ask_question(request):
         question = Question(title=title, description=description, user=user)
         question.save()
 
-        # Redirect to the feed page or any other page
-        return redirect('feed')
+        # Redirect to the question details view with the created question's ID in the query parameters
+        return redirect('question_details', question_id=question.id)
 
     return render(request, 'ask_question.html')
+
+def question_details(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    answers = Answer.objects.filter(question=question)
+    user_answered = Answer.objects.filter(user=request.user, question=question).exists()
+
+    if question.user == request.user:
+        context = {'question': question, 'answers': answers, 'user_answered': user_answered}
+        return render(request, 'questionself.html', context)
+    else:
+        context = {'question': question, 'answers': answers, 'user_answered': user_answered}
+        return render(request, 'question.html', context)
 
 @login_required
 def my_questions(request):
@@ -147,14 +171,20 @@ def my_questions(request):
 def question(request):
     question_id = request.GET['question_id']
     question = get_object_or_404(Question, id=question_id)
-    # Check if the logged-in user is the owner of the question
+    answers = Answer.objects.filter(question=question)
+    comments = QuestionComment.objects.filter(question=question) # Get all comments related to the question
+
+    # Check if the logged-in user has already answered the question
+    user_answered = Answer.objects.filter(user=request.user, question=question).exists()
+
+    # Render the appropriate template based on whether the user has answered the question or not
     if question.user == request.user:
-        # Render the questionself.html template with the question object as context
-        context = {'question': question}
+        # Render the questionself.html template with the question, answers, and comments as context
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
         return render(request, 'questionself.html', context)
     else:
-        # Render the question.html template with the question object as context
-        context = {'question': question}
+        # Render the question.html template with the question, answers, and comments as context
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
         return render(request, 'question.html', context)
 
 def delete_question(request, question_id):
@@ -202,7 +232,7 @@ def vote_question(request, question_id):
     if request.method == 'POST':
         # Retrieve the selected vote options and initial points value from the form data
         votes = request.POST.getlist('vote')
-        initial_points = int(request.POST.get('initial_points'))
+        initial_points = int(request.POST.get('initial_points', 0))
 
         # Update the question points based on the selected vote options
         for vote in votes:
@@ -253,6 +283,64 @@ def vote_question(request, question_id):
     context = {'question': question}
     return render(request, 'question.html', context)
 
+def vote_answer(request, answer_id):
+    # Retrieve the answer object
+    answer = Answer.objects.get(id=answer_id)
+
+    if request.method == 'POST':
+        # Retrieve the selected vote options and initial points value from the form data
+        votes = request.POST.getlist('vote')
+        initial_points = int(request.POST.get('initial_points', 0))
+
+        # Update the answer points based on the selected vote options
+        for vote in votes:
+            if vote == 'increase':
+                # Check if user has already voted and vote_type is 1, then increase by 2
+                if AnswerVote.objects.filter(user=request.user, answer=answer, vote_type=-1).exists():
+                    answer.points += 2
+                else:
+                    answer.points += 1
+            elif vote == 'decrease':
+                # Check if user has already voted and vote_type is -1, then decrease by 2
+                if AnswerVote.objects.filter(user=request.user, answer=answer, vote_type=1).exists():
+                    answer.points -= 2
+                else:
+                    answer.points -= 1
+
+        # If no vote option is selected, reset points to initial value
+        if not votes:
+            if AnswerVote.objects.filter(user=request.user, answer=answer, vote_type=-1).exists():
+                answer.points += 1
+            elif AnswerVote.objects.filter(user=request.user, answer=answer, vote_type=1).exists():
+                answer.points -= 1
+            else:
+                answer.points = initial_points
+
+        # Save the updated answer object
+        answer.save()
+
+        # Retrieve the user object from the request
+        user = request.user
+
+        # Update or create an AnswerVote object for the user and answer
+        answer_vote, created = AnswerVote.objects.update_or_create(
+            user=user,
+            answer=answer,
+            defaults={'vote_type': 1 if 'increase' in votes else -1 if 'decrease' in votes else 0}
+        )
+
+        answer_votes = AnswerVote.objects.all()
+
+        # Iterate through the objects and print the vote_type field value
+
+        # Return the updated answer points as a JSON response
+        response_data = {'answer_points': answer.points}
+        return JsonResponse(response_data)
+
+    # Render the answer details page
+    context = {'answer': answer}
+    return render(request, 'answer.html', context)
+
 def get_user_vote(request):
     if request.method == 'GET':
         question_id = request.GET.get('question_id')  # Get question ID from request parameters
@@ -288,3 +376,48 @@ def search(request):
 
 def base(request):
     return render(request, 'base.html')
+
+def add_answer(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+
+    if request.method == 'POST':
+        answer_text = request.POST['answer_text']
+        user = request.user
+        answer = Answer(user=user, question=question, answer_text=answer_text)
+        answer.save()
+
+    comments = QuestionComment.objects.filter(question=question)
+    answers = Answer.objects.filter(question=question) # Get all answers related to the question
+    context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': True}
+    return render(request, 'question.html', context)
+
+def add_comment(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+
+    if request.method == 'POST':
+        comment_content = request.POST['comment_content']
+        user = request.user
+        comment = QuestionComment(user=user, question=question, comment_text=comment_content)
+        comment.save()
+
+    user_answered = Answer.objects.filter(user=request.user, question=question).exists()
+    comments = QuestionComment.objects.filter(question=question) # Get all comments related to the question
+    answers = Answer.objects.filter(question=question) # Get all answers related to the question
+    context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
+    return render(request, 'question.html', context)
+
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(QuestionComment, id=comment_id)
+    question = comment.question
+
+    if request.method == 'POST' and request.user.is_authenticated and comment.user == request.user:
+        comment.delete()
+        messages.success(request, 'Comment deleted successfully.')
+    else:
+        messages.error(request, 'Failed to delete comment.')
+
+    comments = QuestionComment.objects.filter(question=question) # Get all comments related to the question
+    answers = Answer.objects.filter(question=question) # Get all answers related to the question
+    user_answered = Answer.objects.filter(user=request.user, question=question).exists()
+    context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
+    return render(request, 'question.html', context)

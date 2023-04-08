@@ -7,39 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid black;
-        }
-
-        .logo-img {
-            width: 10rem;
-            height: auto;
-        }
-
-        .search-icon {
-            width: 2rem;
-            height: auto;
-        }
-
-        #search-input {
-            border: none;
-            outline: none;
-        }
-
-        .search-form {
-            flex: 1;
-            border: 1px solid black;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block css %}{% endblock %}
     {% block script %}{% endblock %}
     <title>{% block title %}{% endblock %}</title>
 </head>

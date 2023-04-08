@@ -21,5 +21,12 @@ urlpatterns = [
     path('question/<int:question_id>/vote/', views.vote_question, name='vote_question'),
     path('get_user_vote/', views.get_user_vote, name='get_user_vote'),
     path('search/', views.search, name='search'),
-    path('base/', views.base, name='base')
+    path('base/', views.base, name='base'),
+    path('new/', views.new, name='new'),
+    path('top/', views.top, name='top'),
+    path('question/<int:question_id>/add-answer/', views.add_answer, name='add_answer'),
+    path('question/<int:question_id>/add-comment/', views.add_comment, name='add_comment'),
+    path('answer/<int:answer_id>/vote/', views.vote_answer, name='vote_answer'),
+    path('question/<int:question_id>/', views.question_details, name='question_details'),
+    path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ]

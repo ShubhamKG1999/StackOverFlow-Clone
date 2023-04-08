@@ -3,16 +3,25 @@
 {% block title %}Stack OverFlow - Where Developers Learn, Share, & Build Careers{% endblock %}
 
 {% block content %}
-    <a href="{% url 'users' %}">Go to Users</a>
-    <a href="{% url 'following' %}">Go to Following</a>
-    <a href="{% url 'followers' %}">Go to Followers</a>
-    <a href="{% url 'ask_question' %}">Ask a Question</a>
-    <a href="{% url 'my_questions' %}">My Questions</a>
-    <h2>Questions:</h2>
-    <ul>
-        {% for question in questions %}
-            <li><a href="{% url 'question' %}?question_id={{question.id }}">{{ question.title }}</a></li>
-        {% endfor %}
-    </ul>
+<a href="{% url 'users' %}">Go to Users</a>
+<a href="{% url 'following' %}">Go to Following</a>
+<a href="{% url 'followers' %}">Go to Followers</a>
+<a href="{% url 'ask_question' %}">Ask a Question</a>
+<a href="{% url 'my_questions' %}">My Questions</a>
+<h2>Questions:</h2>
+<span><a href="{% url 'feed' %}">Relevant</a></span>
+<span><a href="{% url 'new' %}">New</a></span>
+<span><a href="{% url 'top' %}">Top</a></span>
+<ul>
+    {% for question in questions %}
+    <li>
+        {{ question.points }} votes
+        <a href="{% url 'question' %}?question_id={{question.id }}">
+            {{ question.title }}
+        </a>
+        asked by {{ question.user.username }} on {{ question.created_at|date:'d-m-y' }}
+    </li>
+    {% endfor %}
+</ul>
 
 {% endblock %}
