@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <ul style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">
+    <ul style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    display: flex; flex-wrap: wrap;">
     {% for user in users %}
         <li style="list-style-type: none;
         box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 1px 0px 0px,
     rgba(27, 31, 35, 0.15) 0px -1px 0px 0px;
-    margin-right: 2rem;">
+    margin-right: 4rem; width: 20rem;">
             <div style="display: flex; padding-top: 1rem;">
                 <a href="{% url 'profile' %}?username={{ user.user.username }}"><img src="{{ user.user.stackoverflowuser.profile_pic.url }}" style="width: 5.2rem; height: 5.2rem; border-radius: 10%;"></a>
             <div style="display: flex; flex-direction: column; justify-content: space-between;
@@ -40,8 +41,8 @@
                 <span>{% if user.is_following %}Following{% else %}Not Following{% endif %}</span>
             </div>
             </div>
-            <p style="margin-top: 0.5rem; margin-right: 2rem;"><b>About: </b>{{ user.user.stackoverflowuser.about }}</p>
-                <p style="margin-top: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem;"><b>Join Date:</b> {{ user.user.stackoverflowuser.join_date }}</p>
+            <p style="margin-top: 0.5rem; margin-right: 1rem;"><b>About: </b>{{ user.user.stackoverflowuser.about }}</p>
+                <p style="margin-top: 0.5rem; margin-bottom: 1rem;"><b>Join Date:</b> {{ user.user.stackoverflowuser.join_date }}</p>
         </li>
     {% endfor %}
     </ul>

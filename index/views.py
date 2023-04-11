@@ -394,7 +394,7 @@ def search(request):
         # You can customize this logic based on your application's requirements
 
         # Assuming you have a 'Question' model in your Django application
-        questions = Question.objects.filter(title__icontains=query) # Example search logic
+        questions = Question.objects.filter(title__icontains=query).annotate(num_answers=Count('answer')) # Example search logic
 
         # Render the search results in a template
         return render(request, 'search_results.html', {'questions': questions, 'query': query})
