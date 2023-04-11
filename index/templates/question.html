@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/feed.css' %}">{% endblock %}
 
 {% block script %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -108,97 +112,154 @@
         });
     });
 </script>
+<script>
+
+</script>
+<script>
+    function changeImage(checkboxId, checkedImageSrc, uncheckedImageSrc) {
+        var checkbox = document.getElementById(checkboxId);
+        var image = checkbox.parentNode.querySelector('img');
+
+        if (checkbox.checked) {
+            // Change the image source to the checked image
+            image.src = checkedImageSrc;
+        } else {
+            // Change the image source to the unchecked image
+            image.src = uncheckedImageSrc;
+        }
+    }
+
+</script>
 {% endblock %}
 
 {% block content %}
 <h1>{{ question.title }}</h1>
-<p>{{ question.description }}</p>
-<p>Posted by: {{ question.user.username }}</p>
-<p>Posted at: {{ question.created_at }}</p>
-<p>Points: <span id="question-points">{{ question.points }}</span></p>
+<p class="asked">Asked {{ question.created_at }}</p>
+<div class="details">
+    <form method="post" action="{% url 'vote_question' question_id=question.id %}" id="question-vote-form"
+        class="questionvote">
+        {% csrf_token %}
+        <label for="increase-question-checkbox">
+            <img src="{% static 'img/upvote.png' %}" alt="Increase Vote" id="increase-question-image">
+            <input type="checkbox" name="question_vote" value="increase" id="increase-question-checkbox"
+                onchange="changeImage('increase-question-checkbox', '{% static 'img/upvoted.png' %}', '{% static 'img/upvote.png' %}')">
+        </label>
+        <p id="question-points">{{ question.points }}</p>
+        <label for="decrease-question-checkbox">
+            <img src="{% static 'img/downvote.png' %}" alt="Decrease Vote" id="decrease-question-image">
+            <input type="checkbox" name="question_vote" value="decrease" id="decrease-question-checkbox"
+            onchange="changeImage('decrease-question-checkbox', '{% static 'img/downvoted.png' %}', '{% static 'img/downvote.png' %}')">
+        </label>
+        <input type="hidden" name="initial_points" value="{{ question.points }}">
+        <!-- Add a hidden input field to store the initial points value -->
+    </form>
 
-
+    <p class="answer">{{ question.description }}</p>
+</div>
+<!-- <div class="by">
+<p>Posted by:<img src="{{ question.user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+    style="width: 1rem; height: 1rem; margin-top: 0.15rem; margin-left: 0.5rem; margin-right: 0.5rem;">{{ question.user.username }}</p>
+</div> -->
 
 <!-- Question vote form -->
-<form method="post" action="{% url 'vote_question' question_id=question.id %}" id="question-vote-form">
-    {% csrf_token %}
-    <label>
-        <input type="checkbox" name="question_vote" value="increase" id="increase-question-checkbox"> Increase
-    </label>
-    <label>
-        <input type="checkbox" name="question_vote" value="decrease" id="decrease-question-checkbox"> Decrease
-    </label>
-    <input type="hidden" name="initial_points" value="{{ question.points }}">
-    <!-- Add a hidden input field to store the initial points value -->
-</form>
+<div class="detailing" style="display: flex; flex-direction: row; justify-content: flex-end;
+        margin-right: 4rem;
+        margin-bottom: 1rem;">
+        <p>asked by <img src="{{ question.user.stackoverflowuser.profile_pic.url }}"
+            style="width: 1.5rem; height: 1.5rem;"> <b>{{ question.user.username }}</b></p>
+    </div>
 
-<h2>Comments</h2>
-<ul id="comments-list">
-  {% for comment in comments %}
-    <li>
-      {{ comment.comment_text }}
-      {% if request.user.is_authenticated and comment.user == request.user %}
-        <form method="post" action="{% url 'delete_comment' comment.id %}">
-          {% csrf_token %}
-          <button type="submit">Delete</button>
-        </form>
-      {% endif %}
-    </li>
-  {% empty %}
-    <li>No comments yet.</li>
-  {% endfor %}
-</ul>
+    <ul id="comments-list" style="list-style-type: none; padding: 0;">
+        {% for comment in comments %}
+        <li style="margin-bottom: 10px;">
+            <p class="comment" style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-right: 4rem;">
+                {{ comment.comment_text }}
+            </p>
+            {% if request.user.is_authenticated and comment.user == request.user %}
+            <form method="post" action="{% url 'delete_comment' comment.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background-color: transparent; color: #dc3545; border: none; border-bottom: 1px solid #dc3545; padding: 0; cursor: pointer;">
+                    Delete
+                </button>
+            </form>
+            
+            {% endif %}
+        </li>
+        {% empty %}
+        <li style="margin-bottom: 10px; color: #999;">No comments yet.</li>
+        {% endfor %}
+    </ul>
+    
 
 
 <!-- Add comment form -->
-<form method="post" action="{% url 'add_comment' question_id=question.id %}">
+<form method="post" action="{% url 'add_comment' question_id=question.id %}" style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 4rem;">
     {% csrf_token %}
-    <input type="hidden" name="question_id" value="{{ question.id }}">
-    <label for="comment-content">Comment:</label>
-    <textarea id="comment-content" name="comment_content" rows="3"></textarea>
-    <button type="submit">Add Comment</button>
+    <input type="hidden" name="question_id" value="{{ question.id }}" style="display: none;">
+    <input id="comment-content" name="comment_content" style="width: 100%; border: none; border-bottom: 1px solid #000; margin-bottom: 10px;">
+    <button type="submit" style="background-color: transparent; color: #007bff; border: none; border-bottom: 1px solid #007bff; padding: 0; cursor: pointer;">
+        Add Comment
+    </button>
 </form>
+
+
+
 
 {% if not user_answered %}
 
 <!-- Add answer form -->
 <h3>Add Answer</h3>
-<form method="post" action="{% url 'add_answer' question_id=question.id %}">
+<form method="post" action="{% url 'add_answer' question_id=question.id %}" style="background-color: #f8f9fa; padding: 10px; border-radius: 5px;
+margin-right: 4rem;">
     {% csrf_token %}
-    <textarea name="answer_text" rows="4" cols="50"></textarea><br>
-    <input type="submit" value="Answer">
+    <textarea name="answer_text" rows="4" cols="50" style="resize: none; border: 1px solid #ced4da; padding: 5px; width: 100%; margin-bottom: 10px; border-radius: 3px;"></textarea>
+    <input type="submit" value="Answer" style="background-color: #007bff; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
 </form>
+
 {% else %}
-<p>You have already answered this question.</p>
+<p style="margin-top: 0.5rem;
+"><h3 style="box-shadow: 0px 2px 0px 0px rgba(27, 31, 35, 0.15);
+margin-right: 4rem; padding-bottom: 0.5rem;">You have already answered this question.</p></h3>
 {% endif %}
 
-<h3>Answers</h3>
 <ul>
     {% for answer in answers %}
-    <li>
-        <p>{{ answer.answer_text }}</p>
-        <p>Helpful: {{ answer.helpful }}</p>
-        <p>Answered by: {{ answer.user.username }}</p>
-        <p>Answered at: {{ answer.created_at }}</p>
-        <p>Points: <span id="answer-points">{{ answer.points }}</span></p>
+    <li style="list-style-type: none;">
+        <div class="details line">
+            <form method="post" action="{% url 'vote_answer' answer_id=answer.id %}" id="answer-vote-form"
+                class="questionvote">
+                {% csrf_token %}
+                <label>
+                    <img src="{% static 'img/upvote.png' %}" alt="Increase Vote" id="increase-question-image">
+                    <input type="checkbox" name="answer_vote" value="increase" id="increase-answer-checkbox"
+                        onchange="changeImage('increase-answer-checkbox', '{% static 'img/upvoted.png' %}', '{% static 'img/upvote.png' %}')">
+                </label>
+                <p id="answer-points">{{ answer.points }}</p>
+                <label>
+                    <img src="{% static 'img/downvote.png' %}" alt="Decrease Vote" id="decrease-question-image">
+                    <input type="checkbox" name="answer_vote" value="decrease" id="decrease-answer-checkbox"
+                    onchange="changeImage('decrease-answer-checkbox', '{% static 'img/downvoted.png' %}', '{% static 'img/downvote.png' %}')">
+                </label>
+                <input type="hidden" name="initial_points" value="{{ answer.points }}">
+                <!-- Add a hidden input field to store the initial points value -->
+            </form>
+            <p class="answer">{{ answer.answer_text }}</p>
+
+        </div>
+
 
         <!-- Answer vote form -->
-        <form method="post" action="{% url 'vote_answer' answer_id=answer.id %}" id="answer-vote-form">
-            {% csrf_token %}
-            <label>
-                <input type="checkbox" name="answer_vote" value="increase" id="increase-answer-checkbox"> Increase
-            </label>
-            <label>
-                <input type="checkbox" name="answer_vote" value="decrease" id="decrease-answer-checkbox"> Decrease
-            </label>
-            <input type="hidden" name="initial_points" value="{{ answer.points }}">
-            <!-- Add a hidden input field to store the initial points value -->
-        </form>
+
+        <div class="detailing" style="display: flex; flex-direction: row; justify-content: flex-end;
+        margin-right: 4rem; margin-bottom: 1rem;
+        box-shadow: 0px 2px 0px 0px rgba(27, 31, 35, 0.15);">
+        <p style="margin-bottom: 1rem;">answered by <img src="{{ answer.user.stackoverflowuser.profile_pic.url }}"
+            style="width: 1.5rem; height: 1.5rem;"> <b>{{ answer.user.username }}</b> at {{ answer.created_at }}</p>
+    </div>
     </li>
     {% empty %}
-    <li>No answers yet.</li>
+    <h3 style="margin-top: 0.5rem;">No answers yet.</h3>
     {% endfor %}
 </ul>
 
-<a href="{% url 'feed' %}">Back to Feed</a>
 {% endblock %}

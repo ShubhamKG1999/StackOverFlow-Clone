@@ -1,27 +1,39 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/profile.css' %}">{% endblock %}
+{% block title %}{{ user.username }} - Stack OverFlow{% endblock %}
+{% block content %}
+<div style="display: flex;">
+<img src="{{ user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+    style="width: 9em; height: 9rem; border-radius: 5%; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+    <div style="display: flex; flex-direction: column;
+    justify-content: space-between;
+    margin-left: 2rem;
+    margin-right: 8rem;">
+<h1 style="font-weight: 500; font-family: Arial, Helvetica, sans-serif;">{{ user.username }}</h1>
+<p><b>Email: </b>{{ user.email }}</p>
+<p><b>About: </b>{{ user.stackoverflowuser.about }}</p>
+<p><b>Website: </b><a href="{{ user.stackoverflowuser.link }}">{{ user.stackoverflowuser.link }}</a></p>
+</div>
+</div>
 
-<head>
-    <title>Profile</title>
-</head>
+<div style="display: flex; flex-direction: column; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+margin-right: 8rem; gap: 2rem; font-size: 1.25rem; text-align: left;
+padding: 2rem; margin-top: 1.5rem;
+margin-bottom: 1rem;">
+        <div style="display: flex;
+        justify-content: space-between;">
+        <p><b>Questions Answered: </b>{{ answers_given }}</p>
+        <p><b>Questions Asked: </b>{{ questions_asked }}</p>
+    </div>
+    <div style="display: flex;
+    justify-content: space-between;">
+        <p><b>Karma: </b>{{ total_votes }}</p>
+        <p><b>Join Date: </b>{{ user.stackoverflowuser.join_date }}</p>
+    </div>
+</div>
+<!-- Display "about" and "link" field values -->
 
-<body>
-    <h1>Profile</h1>
-    <p>Username: {{ user.username }}</p>
-    <img src="{{ user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture">
-    <p>Email: {{ user.email }}</p>
-    <p>Karma: {{ total_votes }}</p>
-    <!-- Display karma field value -->
-    <p>Questions Asked: {{ questions_asked }}</p> <!-- Display questions_asked field value from context -->
-    <p>Questions Answered: {{ user.stackoverflowuser.questions_answered }}</p>
-    <!-- Display questions_answered field value -->
-    <p>Join Date: {{ user.stackoverflowuser.join_date }}</p>
-    <p>About: {{ user.stackoverflowuser.about }}</p>
-    <p>Link: <a href="{{ user.stackoverflowuser.link }}"> <!-- Display "about" field value -->
-        {{ user.stackoverflowuser.link }}</a></p>
-     <!-- Display "about" field value -->
-     <!-- Display join_date field value -->
-    <a href="{% url 'feed' %}">Go back to Feed</a>
-</body>
-
-</html>
+<!-- Add Edit Profile button with a link to the edit_profile view -->
+{% endblock %}
