@@ -1,18 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Following</h1>
-    <ul>
+    <ul style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">
     {% for user in following_users %}
-        <li>
-            <a href="{% url 'profile' %}?username={{ user.following.username }}">{{ user.following.username }}</a>
-            <span>Karma: {{ user.following.stackoverflowuser.karma }}</span>
+    <li style="display: flex; list-style-type: none;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+rgba(27, 31, 35, 0.15) 0px 1px 0px 0px,
+rgba(27, 31, 35, 0.15) 0px -1px 0px 0px;
+margin-right: 2rem; padding-top: 1rem; padding-bottom: 1rem; margin-bottom: 1rem;">
+            <a href="{% url 'profile' %}?username={{ user.following.username }}"><img src="{{ user.following.stackoverflowuser.profile_pic.url }}" style="width: 5.2rem; height: 5.2rem; border-radius: 10%;"></a>
+            <div style="display: flex; flex-direction: column; justify-content: space-between; margin-left: 1rem;"><a href="{% url 'profile' %}?username={{ user.following.username }}" style="color: black; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; text-decoration: none;">{{ user.following.username }}</a>
+            <p><b>About: </b>{{ user.following.stackoverflowuser.about }}</p>
+            <p><b>Join Date: </b>{{ user.following.stackoverflowuser.join_date }}</p>
+        </div>
         </li>
     {% empty %}
         <li>No users being followed.</li>
     {% endfor %}
     </ul>
-    <a href="{% url 'feed' %}">Go back to Feed</a>
 </body>
 </html>
 {% endblock %}

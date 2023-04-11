@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -29,4 +31,7 @@ urlpatterns = [
     path('answer/<int:answer_id>/vote/', views.vote_answer, name='vote_answer'),
     path('question/<int:question_id>/', views.question_details, name='question_details'),
     path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'), 
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

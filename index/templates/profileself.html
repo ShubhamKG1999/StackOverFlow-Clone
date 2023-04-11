@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/profile.css' %}">{% endblock %}
+{% block title %}{{ user.username }} - Stack OverFlow{% endblock %}
 {% block content %}
-    <h1>Profile</h1>
-    <p>Username: {{ user.username }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Karma: {{ user.stackoverflowuser.karma }}</p>
-    <p>Questions Asked: {{ user.stackoverflowuser.questions_asked }}</p> <!-- Display questions_asked field value -->
-    <p>Questions Answered: {{ user.stackoverflowuser.questions_answered }}</p> <!-- Display questions_answered field value -->
-    <p>Join Date: {{ user.stackoverflowuser.join_date }}</p> <!-- Display join_date field value -->
-    <a href="{% url 'logout' %}">Logout</a>
+<img src="{{ user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+    style="width: 8rem; height: 8rem; border-radius: 5%; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+<h1 style="font-weight: 500; font-family: Arial, Helvetica, sans-serif;">{{ user.username }}</h1>
+<p>Email: {{ user.email }}</p>
+<div style="display: flex; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+    <div style="flex: 1;">
+        <p>Karma: {{ total_votes }}</p>
+        <p>Questions Answered: {{ answers_given }}</p>
+        
+    </div>
+    <div style="flex: 1;">
+        <p>Questions Asked: {{ questions_asked }}</p>
+        <p>Join Date: {{ user.stackoverflowuser.join_date }}</p>
+    </div>
+</div>
+<p>About: {{ user.stackoverflowuser.about }}</p>
+<p>Link: <a href="{{ user.stackoverflowuser.link }}">{{ user.stackoverflowuser.link }}</a></p>
+<!-- Display "about" and "link" field values -->
+<a href="{% url 'logout' %}">Logout</a>
+<a href="{% url 'edit_profile' %}">Edit Profile</a>
+<!-- Add Edit Profile button with a link to the edit_profile view -->
 {% endblock %}
-

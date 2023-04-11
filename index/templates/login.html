@@ -1,17 +1,67 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Login Page</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Stack OverFlow - Where Developers Learn, Share, & Build Careers</title>
 </head>
+
 <body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username</label>
-        <input type="text" name="username" required>
-        <label for="password">Password</label>
-        <input type="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
+    <header>
+        <a href="{% url 'feed' %}">
+            <img src="{% static 'img/logo-stackoverflow.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <form id="search-form" action="{% url 'search' %}" method="GET" class="search-form">
+            <img src="{% static 'img/magnifying-glass.svg' %}" alt="Search" class="search-icon">
+            <input id="search-input" type="text" name="query" placeholder="Search...">
+        </form>
+        <a href="{% url 'login' %}" class='login'>Log in</a>
+        <a href="{% url 'signup' %}" class="signup">Sign up</a>
+    </header>
+    <div class="bigbox">
+        <div class="first">Log in with Google</div>
+        <div class="second">Log in with GitHub</div>
+        <div class="third">Log in with Facebook</div>
+        <form method="post" class="fourth">
+            {% csrf_token %}
+            <label for="username">Username</label>
+            <input type="text" name="username" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" required>
+            <button type="submit">Log in</button>
+        </form>
+        <p class="not">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+    </div>
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #2a2e31; margin: 0; padding-top: 0.8rem; padding-bottom: 0.8rem; display: flex; align-items: center; color: white; justify-content: space-between; padding-right: 3rem;">
+        <a href="{% url 'feed' %}" style="margin-right: 20px;">
+            <img src="{% static 'img/logo-meta.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <p style="margin-right: 10px;">Blog</p>
+        <p style="margin-right: 10px;">Facebook</p>
+        <p style="margin-right: 10px;">Twitter</p>
+        <p style="margin-right: 10px;">Linkedin</p>
+        <p style="margin-right: 10px;">Instagram</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('search-form');
+            var input = document.getElementById('search-input');
+
+            input.addEventListener('keydown', function (event) {
+                if (event.keyCode === 13) { // Check if Enter key is pressed
+                    form.submit(); // Submit the form
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

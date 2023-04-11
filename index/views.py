@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from .models import StackOverFlowUser, Follow, Question, QuestionVote, QuestionComment, Answer, AnswerVote
@@ -61,20 +62,20 @@ def login_view(request):
 @login_required(login_url='index')
 def feed(request):
     following_users = Follow.objects.filter(follower=request.user).values_list('following', flat=True)
-    # Get the questions of the following users
-    questions = Question.objects.filter(user__in=following_users).order_by('-created_at')
+    # Get the questions of the following users, annotate with count of answers
+    questions = Question.objects.filter(user__in=following_users).annotate(num_answers=Count('answer')).order_by('-created_at')
     context = {'questions': questions}
     return render(request, 'feed.html', context)
 
 @login_required(login_url='index')
 def new(request):
-    questions = Question.objects.order_by('-created_at')
+    questions = Question.objects.annotate(num_answers=Count('answer')).order_by('-created_at')
     context = {'questions': questions}
     return render(request, 'feed.html', context)
 
 @login_required(login_url='index')
 def top(request):
-    questions = Question.objects.order_by('-points')
+    questions = Question.objects.annotate(num_answers=Count('answer')).order_by('-points')
     context = {'questions': questions}
     return render(request, 'feed.html', context)
 
@@ -85,11 +86,38 @@ def profile(request):
         # If username parameter is present, retrieve the user and pass to profileother.html template
         try:
             user = User.objects.get(username=username)
-            context = {'user': user}
+            stackoverflow_user = StackOverFlowUser.objects.get(user=user)
+            questions_asked = Question.objects.filter(user=user).count()
+            answers_given = Answer.objects.filter(user=user).count()
+            question_votes = QuestionVote.objects.filter(user=user).count()
+            answer_votes = AnswerVote.objects.filter(user=user).count()
+            total_votes = question_votes + answer_votes
+            context = {
+                'user': user,
+                'stackoverflow_user': stackoverflow_user,
+                'questions_asked': questions_asked,
+                'answers_given': answers_given,
+                'total_votes': total_votes
+            }
             return render(request, 'profileother.html', context)
         except User.DoesNotExist:
             pass  # Handle the case where the user does not exist
-    return render(request, 'profileself.html')
+    else:
+        user = request.user
+        stackoverflow_user = StackOverFlowUser.objects.get(user=user)
+        questions_asked = Question.objects.filter(user=user).count()
+        answers_given = Answer.objects.filter(user=user).count()
+        question_votes = QuestionVote.objects.filter(user=user).count()
+        answer_votes = AnswerVote.objects.filter(user=user).count()
+        total_votes = question_votes + answer_votes
+        context = {
+            'user': user,
+            'stackoverflow_user': stackoverflow_user,
+            'questions_asked': questions_asked,
+            'answers_given': answers_given,
+            'total_votes': total_votes
+        }
+        return render(request, 'profileself.html', context)
 
 @login_required(login_url='index')
 def logout_view(request):
@@ -164,7 +192,7 @@ def question_details(request, question_id):
 @login_required
 def my_questions(request):
     # Retrieve questions asked by the currently logged-in user
-    questions = Question.objects.filter(user=request.user)
+    questions = Question.objects.filter(user=request.user).annotate(num_answers=Count('answer')).order_by('-created_at')
     context = {'my_questions': questions}
     return render(request, 'my_questions.html', context)
 
@@ -374,8 +402,14 @@ def search(request):
         # Render the search page if the form is not submitted with GET method
         return render(request, 'feed.html')
 
+
 def base(request):
-    return render(request, 'base.html')
+    following_users = Follow.objects.filter(follower=request.user)
+    followers = Follow.objects.filter(following=request.user)
+    
+    context = {'following_users': following_users, 'followers': followers}
+    
+    return render(request, 'base.html', context)
 
 def add_answer(request, question_id):
     question = get_object_or_404(Question, id=question_id)
@@ -387,9 +421,15 @@ def add_answer(request, question_id):
         answer.save()
 
     comments = QuestionComment.objects.filter(question=question)
-    answers = Answer.objects.filter(question=question) # Get all answers related to the question
-    context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': True}
-    return render(request, 'question.html', context)
+    answers = Answer.objects.filter(question=question)
+    
+    # Check if the question belongs to the logged-in user
+    if question.user == request.user:
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': True}
+        return render(request, 'questionself.html', context)
+    else:
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': True}
+        return render(request, 'question.html', context)
 
 def add_comment(request, question_id):
     question = get_object_or_404(Question, id=question_id)
@@ -401,10 +441,16 @@ def add_comment(request, question_id):
         comment.save()
 
     user_answered = Answer.objects.filter(user=request.user, question=question).exists()
-    comments = QuestionComment.objects.filter(question=question) # Get all comments related to the question
-    answers = Answer.objects.filter(question=question) # Get all answers related to the question
-    context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
-    return render(request, 'question.html', context)
+    comments = QuestionComment.objects.filter(question=question)
+    answers = Answer.objects.filter(question=question)
+    
+    # Check if the question belongs to the logged-in user
+    if question.user == request.user:
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
+        return render(request, 'questionself.html', context)
+    else:
+        context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
+        return render(request, 'question.html', context)
 
 def delete_comment(request, comment_id):
     comment = get_object_or_404(QuestionComment, id=comment_id)
@@ -420,4 +466,35 @@ def delete_comment(request, comment_id):
     answers = Answer.objects.filter(question=question) # Get all answers related to the question
     user_answered = Answer.objects.filter(user=request.user, question=question).exists()
     context = {'question': question, 'answers': answers, 'comments': comments, 'user_answered': user_answered}
+    if question.user == request.user:
+        return render(request, 'questionself.html', context)
     return render(request, 'question.html', context)
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    stackoverflowuser, created = StackOverFlowUser.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        about = request.POST['about']
+        link = request.POST['link']
+        profile_pic = request.FILES.get('profile_pic')
+        
+        # Update the stackoverflowuser fields
+        stackoverflowuser.about = about
+        stackoverflowuser.link = link
+        if profile_pic:
+            stackoverflowuser.profile_pic = profile_pic
+        
+        stackoverflowuser.save()
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')  # Redirect to profile page
+    else:
+        initial_data = {
+            'about': stackoverflowuser.about,
+            'link': stackoverflowuser.link
+        }
+        form = None
+
+    return render(request, 'edit_profile.html', {'form': form, 'initial_data': initial_data})
+

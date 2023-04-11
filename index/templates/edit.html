@@ -1,19 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Question</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/edit_question.css' %}">
+{% endblock %}
+
+{% block content %}
     <h1>Edit Question</h1>
-    <form method="post">
+    <form method="post" class="form">
         {% csrf_token %}
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" value="{{ question.title }}"><br>
         <label for="description">Description:</label>
-        <textarea id="description" name="description">{{ question.description }}</textarea><br>
-        <input type="submit" value="Update Question">
+        <textarea id="description" name="description" rows="10" cols="30">{{ question.description }}</textarea><br>
+        <input type="submit" value="Update Question" class="submit">
     </form>
+{% endblock %}
 
-    <a href="{% url 'question' %}?question_id={{question.id }}">Back to Question Details</a>
-</body>
-</html>

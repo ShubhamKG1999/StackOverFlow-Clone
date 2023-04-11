@@ -19,15 +19,53 @@
             <img src="{% static 'img/logo-stackoverflow.svg' %}" alt="LOGO" class="logo-img">
         </a>
         <form id="search-form" action="{% url 'search' %}" method="GET" class="search-form">
-            <img src="{% static 'img/magnifying-glass.png' %}" alt="Search" class="search-icon">
+            <img src="{% static 'img/magnifying-glass.svg' %}" alt="Search" class="search-icon">
             <input id="search-input" type="text" name="query" placeholder="Search...">
         </form>
         <a href="{% url 'profile' %}">
-            <img src="{% static 'img/profile-image.png' %}" alt="Profile Image" class="profile-img">
+            <img src="{{ user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+                style="width: 2rem; height: 2rem; margin-top: 0.15rem; margin-left: 1rem; margin-right: 1rem;">
         </a>
+        <a href="{% url 'logout' %}" class='logout'>Log out</a>
     </header>
 
-    {% block content %}{% endblock %}
+    <div class="content">
+        <div class="left" id="left-container">
+            <a href="{% url 'feed' %}">Home</a>
+            <a href="{% url 'new' %}">Questions</a>
+            <a href="{% url 'users' %}">Users</a>
+        </div>
+
+
+        <div class="middle" style="margin-left: 2rem;">
+
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="right" id="right-container">
+            <a href="{% url 'following' %}">Following</a>
+            <a href="{% url 'followers' %}">Followers</a>
+            <a href="{% url 'ask_question' %}">Ask a Question</a>
+            <a href="{% url 'profile' %}">My Profile</a>
+        </div>
+    </div>
+
+
+
+
+    <footer
+        style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #2a2e31; margin: 0; padding-top: 0.8rem; padding-bottom: 0.8rem; display: flex; align-items: center; color: white; justify-content: space-between; padding-right: 3rem;">
+        <a href="{% url 'feed' %}" style="margin-right: 20px;">
+            <img src="{% static 'img/logo-meta.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <p style="margin-right: 10px;">Blog</p>
+        <p style="margin-right: 10px;">Facebook</p>
+        <p style="margin-right: 10px;">Twitter</p>
+        <p style="margin-right: 10px;">Linkedin</p>
+        <p style="margin-right: 10px;">Instagram</p>
+    </footer>
+
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -39,6 +77,37 @@
                     form.submit(); // Submit the form
                 }
             });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Calculate the actual height of the content
+            var contentHeight = Math.max(
+                document.body.scrollHeight,
+                document.body.offsetHeight,
+                document.documentElement.clientHeight,
+                document.documentElement.scrollHeight,
+                document.documentElement.offsetHeight
+            );
+
+            // Set the height of the .right element to the actual height of the content
+            document.getElementById('right-container').style.height = contentHeight + "px";
+        });
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Calculate the actual height of the content
+            var contentHeight = Math.max(
+                document.body.scrollHeight,
+                document.body.offsetHeight,
+                document.documentElement.clientHeight,
+                document.documentElement.scrollHeight,
+                document.documentElement.offsetHeight
+            );
+
+            // Set the height of the .right element to the actual height of the content
+            document.getElementById('left-container').style.height = contentHeight + "px";
         });
     </script>
 </body>

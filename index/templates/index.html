@@ -1,11 +1,71 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Index Page</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <title>Stack OverFlow - Where Developers Learn, Share, & Build Careers</title>
 </head>
+
 <body>
-    <h1>Welcome to StackOverFlow</h1>
-    <a href="{% url 'signup' %}">Signup</a>
-    <a href="{% url 'login' %}">Login</a>
+    <header>
+        <a href="{% url 'feed' %}">
+            <img src="{% static 'img/logo-stackoverflow.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <form id="search-form" action="{% url 'search' %}" method="GET" class="search-form">
+            <img src="{% static 'img/magnifying-glass.svg' %}" alt="Search" class="search-icon">
+            <input id="search-input" type="text" name="query" placeholder="Search...">
+        </form>
+        <a href="{% url 'login' %}"class='login'>Log in</a>
+        <a href="{% url 'signup' %}" class="signup">Sign up</a>
+    </header>
+
+    <div class="mainbox">
+        <div class="upperbox">
+            <div class="box1">
+                <img src="{% static 'img/glass.png' %}" alt="IMG" class="lock-img">
+                <p class="a">Find the best answer to your technical question, help others answer theirs</p>
+                <p class="b">Join the community</p>
+                <p class="c">or search content</p>
+            </div>
+            <div class="box2">
+                <img src="{% static 'img/lock.png' %}" alt="IMG" class="lock-img">
+                <p class="p">Want a secure, private space for your technical knowledge?</p>
+                <p class="q">Discover Teams</p>
+                <p class="r"></p>
+            </div>
+        </div>
+        <div class="lowerbox">Every Developer has a tab open to Stack Overflow</div>
+    </div>
+
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #2a2e31; margin: 0; padding-top: 0.8rem; padding-bottom: 0.8rem; display: flex; align-items: center; color: white; justify-content: space-between; padding-right: 3rem;">
+        <a href="{% url 'feed' %}" style="margin-right: 20px;">
+            <img src="{% static 'img/logo-meta.svg' %}" alt="LOGO" class="logo-img">
+        </a>
+        <p style="margin-right: 10px;">Blog</p>
+        <p style="margin-right: 10px;">Facebook</p>
+        <p style="margin-right: 10px;">Twitter</p>
+        <p style="margin-right: 10px;">Linkedin</p>
+        <p style="margin-right: 10px;">Instagram</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('search-form');
+            var input = document.getElementById('search-input');
+
+            input.addEventListener('keydown', function (event) {
+                if (event.keyCode === 13) { // Check if Enter key is pressed
+                    form.submit(); // Submit the form
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

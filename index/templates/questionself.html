@@ -1,28 +1,244 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'css/feed.css' %}">{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // JavaScript for question vote
+    $(document).ready(function () {
+        // Fetch user's previous vote for question from server using AJAX
+        $.ajax({
+            url: '{% url 'get_user_vote' %}',  // Replace with your URL for fetching user's previous vote
+            type: 'GET',
+            data: { question_id: '{{ question.id }}' },  // Include question ID in request data
+            success: function (data) {
+                // Check/uncheck checkboxes based on user's previous vote
+                if (data.vote_type === 1) {
+                    $('#increase-question-checkbox').prop('checked', true);
+                } else if (data.vote_type === -1) {
+                    $('#decrease-question-checkbox').prop('checked', true);
+                }
+            },
+            error: function () {
+                console.error('Failed to fetch user vote for question.');
+            }
+        });
+
+        // Send form data to server using AJAX when a checkbox is selected
+        $('input[name=question_vote]').on('change', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Uncheck other checkboxes
+            $('input[name=question_vote]').not(this).prop('checked', false);
+
+            // Get selected vote option
+            var vote = $('input[name=question_vote]:checked').val();
+
+            // Get initial points value
+            var initial_points = $('input[name=question_initial_points]').val();
+
+            // Get CSRF token
+            var csrf_token = $('input[name=csrfmiddlewaretoken]').val();
+
+            // Send form data to server using AJAX
+            $.ajax({
+                url: $('#question-vote-form').attr('action'),
+                type: $('#question-vote-form').attr('method'),
+                data: { vote: vote, initial_points: initial_points }, // Include initial points value in request data
+                headers: { 'X-CSRFToken': csrf_token }, // Include CSRF token in request headers
+                success: function (data) {
+                    // Update question points on success
+                    $('#question-points').text(data.question_points);
+                },
+                error: function () {
+                    alert('An error occurred while processing your vote for question. Please try again.');
+                }
+            });
+        });
+    });
+
+    // JavaScript for answer vote
+    // JavaScript for answer vote
+    $(document).ready(function () {
+        // Fetch user's previous vote for answer from server using AJAX
+        $.ajax({
+            url: '{% url 'get_user_vote' %}',  // Replace with your URL for fetching user's previous vote
+            type: 'GET',
+            data: { answer_id: '{{ answer.id }}' },  // Include answer ID in request data
+            success: function (data) {
+                // Check/uncheck checkboxes based on user's previous vote
+                if (data.vote_type === 1) {
+                    $('#increase-answer-checkbox').prop('checked', true);
+                } else if (data.vote_type === -1) {
+                    $('#decrease-answer-checkbox').prop('checked', true);
+                }
+            },
+            error: function () {
+                console.error('Failed to fetch user vote for answer.');
+            }
+        });
+
+        // Send form data to server using AJAX when a checkbox is selected
+        $('input[name=answer_vote]').on('change', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get selected vote option
+            var vote = $('input[name=answer_vote]:checked').val();
+
+            // Get initial points value
+            var initial_points = $('input[name=answer_initial_points]', $(this).closest('form')).val();
+
+            // Get CSRF token
+            var csrf_token = $('input[name=csrfmiddlewaretoken]', $(this).closest('form')).val();
+
+            // Send form data to server using AJAX
+            $.ajax({
+                url: $(this).closest('form').attr('action'),
+                type: $(this).closest('form').attr('method'),
+                data: { vote: vote, initial_points: initial_points }, // Include initial points value in request data
+                headers: { 'X-CSRFToken': csrf_token }, // Include CSRF token in request headers
+                success: function (data) {
+                    // Update answer points on success
+                    $('#answer-points', $(this).closest('li')).text(data.answer_points);
+                }.bind(this),
+                error: function () {
+                    alert('An error occurred while processing your vote for answer. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    document.getElementById('increase-question-checkbox').addEventListener('change', function() {
+    var image = document.getElementById('increase-question-image');
+    if (this.checked) {
+        image.src = "{% static 'img/upvoted.png' %}";
+    } else {
+        image.src = "{% static 'img/upvote.png' %}";
+    }
+});
+
+document.getElementById('decrease-question-checkbox').addEventListener('change', function() {
+    var image = document.getElementById('decrease-question-image');
+    if (this.checked) {
+        image.src = "{% static 'img/decrease-image-checked.png' %}";
+    } else {
+        image.src = "{% static 'img/decrease-image-unchecked.png' %}";
+    }
+});
+</script>
+{% endblock %}
 
 {% block content %}
-<h1>Question Details</h1>
-<h2>{{ question.title }}</h2>
-<p>{{ question.description }}</p>
-<p>Asked by: {{ question.user.username }}</p>
-<p>Created at: {{ question.created_at }}</p>
+<h1>{{ question.title }}</h1>
+<p class="asked">Asked {{ question.created_at }}</p>
+<div class="details">
+    <form method="post" action="{% url 'vote_question' question_id=question.id %}" id="question-vote-form" class="questionvote">
+        {% csrf_token %}
+        <label for="increase-question-checkbox">
+            <img src="{% static 'img/upvote.png' %}" alt="Increase Vote" id="increase-question-image">
+            <input type="checkbox" name="question_vote" value="increase" id="increase-question-checkbox">
+        </label>
+        <p id="question-points">{{ question.points }}</p>
+        <label for="decrease-question-checkbox">
+            <img src="{% static 'img/downvote.png' %}" alt="Decrease Vote" id="decrease-question-image">
+            <input type="checkbox" name="question_vote" value="decrease" id="decrease-question-checkbox">
+        </label>
+        <input type="hidden" name="initial_points" value="{{ question.points }}">
+        <!-- Add a hidden input field to store the initial points value -->
+    </form>
+    
+<p class="answer">{{ question.description }}</p>
+</div>
+<!-- <div class="by">
+<p>Posted by:<img src="{{ question.user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+    style="width: 1rem; height: 1rem; margin-top: 0.15rem; margin-left: 0.5rem; margin-right: 0.5rem;">{{ question.user.username }}</p>
+</div> -->
 
+<div class="editing">
+<a href="{% url 'edit_question' question_id=question.id %}" class="edit">Edit Question</a>
 <form method="post" action="{% url 'delete_question' question_id=question.id %}">
     {% csrf_token %}
-    <input type="submit" value="Delete Question">
+    <input type="submit" value="Delete" class="delete">
+</form>
+</div>
+
+<!-- Question vote form -->
+
+<ul id="comments-list">
+  {% for comment in comments %}
+    <li style="list-style-type: none;">
+      <p class="comment">{{ comment.comment_text }}</p>
+      {% if request.user.is_authenticated and comment.user == request.user %}
+        <form method="post" action="{% url 'delete_comment' comment.id %}">
+          {% csrf_token %}
+          <button type="submit">Delete</button>
+        </form>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li style="list-style-type: none;" class="yet">No comments yet.</li>
+  {% endfor %}
+</ul>
+
+
+<!-- Add comment form -->
+<form method="post" action="{% url 'add_comment' question_id=question.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <textarea id="comment-content" name="comment_content" rows="3"></textarea>
+    <button type="submit">Add Comment</button>
 </form>
 
-<a href="{% url 'edit_question' question_id=question.id %}">Edit Question</a>
+{% if not user_answered %}
 
-<h3>Answers</h3>
+<!-- Add answer form -->
+<h3>Add Answer</h3>
+<form method="post" action="{% url 'add_answer' question_id=question.id %}">
+    {% csrf_token %}
+    <textarea name="answer_text" rows="4" cols="50"></textarea><br>
+    <input type="submit" value="Answer">
+</form>
+{% else %}
+<p>You have already answered this question.</p>
+{% endif %}
+
 <ul>
     {% for answer in answers %}
-    <li>{{ answer.answer_text }}</li>
+    <li style="list-style-type: none;">
+    <div class="details line">
+        <form method="post" action="{% url 'vote_answer' answer_id=answer.id %}" id="answer-vote-form" class="questionvote">
+            {% csrf_token %}
+            <label>
+            <img src="{% static 'img/upvote.png' %}" alt="Increase Vote" id="increase-question-image">
+                <input type="checkbox" name="answer_vote" value="increase" id="increase-answer-checkbox">
+            </label>
+            <p id="answer-points">{{ answer.points }}</p>
+            <label>
+            <img src="{% static 'img/downvote.png' %}" alt="Decrease Vote" id="decrease-question-image">
+                <input type="checkbox" name="answer_vote" value="decrease" id="decrease-answer-checkbox">
+            </label>
+            <input type="hidden" name="initial_points" value="{{ answer.points }}">
+            <!-- Add a hidden input field to store the initial points value -->
+        </form>
+        <p class="answer">{{ answer.answer_text }}</p>
+        
+    </div>
+        
+
+        <!-- Answer vote form -->
+
+        <div class="detailing"></div>
+        <p>Answered by: {{ answer.user.username }}</p>
+        <p>Answered at: {{ answer.created_at }}</p>
+    </li>
     {% empty %}
     <li>No answers yet.</li>
     {% endfor %}
 </ul>
-
 
 <a href="{% url 'feed' %}">Back to Feed</a>
 {% endblock %}

@@ -2,17 +2,22 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    
 }
 
 header {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid black;
+    border: initial;
+    margin-top: 0.5rem;
+    box-shadow: 0px 1.95px 2.6px rgba(0, 0, 0, 0.15);
+    padding-bottom: 0.5em;
 }
 
 .logo-img {
     width: 10rem;
     height: auto;
+    margin-left: 2rem;
 }
 
 .search-icon {
@@ -23,9 +28,88 @@ header {
 #search-input {
     border: none;
     outline: none;
+    width: 92.5%;
+    height: 100%;
+    align-self: center;
+    font-size: 1rem;
+    margin-left: 0.5rem;
 }
 
 .search-form {
     flex: 1;
-    border: 1px solid black;
+    margin-left: 2rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+#search-form {
+    display: flex;
+}
+
+.logout {
+    background-color: #e1ecf4;
+    color: #39739d;
+    text-decoration: none;
+    border: 1px solid #7aa7c7;
+    border-radius: 0.3rem;
+    align-self: center;
+    padding: 0.3rem;
+    margin-right: 0.5rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    margin-left: initial;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 0.8rem;
+    padding-top: 0.82rem;
+    margin-top: 0.18rem;
+    height: 80vh;
+    box-shadow: rgba(27, 31, 35, 0.15) 0px 0px 0px 3.2px; /* Add position relative to make the pseudo-element positioned relative to this element */
+}
+
+.left a {
+    color: #000;
+    font-weight: 900;
+    text-decoration: none;
+    background-color: #f1f2f3;
+    padding: 0.75rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px;
+    padding-right: 6rem;
+    padding-left: 1rem;
+}
+
+.middle {
+    margin-top: 1.5rem;
+    flex: 1;
+    flex-grow: 1;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 0.8rem;
+    padding-top: 0.82rem;
+    margin-top: 0.18rem;
+    height: 100vh; /* Set height to 100vh to extend the box shadow to the entire page length */
+    box-shadow: rgba(27, 31, 35, 0.15) -3.2px 0px 0px 0px; /* Apply box shadow on the left side */
+}
+
+.right a {
+    color: #000;
+    font-weight: 900;
+    text-decoration: none;
+    background-color: #f1f2f3;
+    padding: 0.75rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px;
+    padding-right: 6rem;
+    padding-left: 1rem;
 }

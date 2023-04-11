@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Profile</title>
 </head>
+
 <body>
     <h1>Profile</h1>
     <p>Username: {{ user.username }}</p>
+    <img src="{{ user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture">
     <p>Email: {{ user.email }}</p>
-    <p>Questions Asked: {{ user.stackoverflowuser.questions_asked }}</p> <!-- Display questions_asked field value -->
-    <p>Questions Answered: {{ user.stackoverflowuser.questions_answered }}</p> <!-- Display questions_answered field value -->
-    <p>Join Date: {{ user.stackoverflowuser.join_date }}</p> <!-- Display join_date field value -->
+    <p>Karma: {{ total_votes }}</p>
+    <!-- Display karma field value -->
+    <p>Questions Asked: {{ questions_asked }}</p> <!-- Display questions_asked field value from context -->
+    <p>Questions Answered: {{ user.stackoverflowuser.questions_answered }}</p>
+    <!-- Display questions_answered field value -->
+    <p>Join Date: {{ user.stackoverflowuser.join_date }}</p>
+    <p>About: {{ user.stackoverflowuser.about }}</p>
+    <p>Link: <a href="{{ user.stackoverflowuser.link }}"> <!-- Display "about" field value -->
+        {{ user.stackoverflowuser.link }}</a></p>
+     <!-- Display "about" field value -->
+     <!-- Display join_date field value -->
     <a href="{% url 'feed' %}">Go back to Feed</a>
 </body>
+
 </html>

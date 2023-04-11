@@ -1,28 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Users</h1>
-    <ul>
+    <ul style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">
     {% for user in users %}
-        <li>
-            <a href="{% url 'profile' %}?username={{ user.user.username }}">{{ user.user.username }}</a>
-            <!-- Display usernames as links that redirect to profile.html with the username as a parameter,
-                 but skip the logged-in user -->
-            <span>Karma: {{ user.karma }}</span>
-            <!-- Display karma alongside the username -->
-            <span>Follow status: {% if user.is_following %}Following{% else %}Not Following{% endif %}</span>
+        <li style="list-style-type: none;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 1px 0px 0px,
+    rgba(27, 31, 35, 0.15) 0px -1px 0px 0px;
+    margin-right: 2rem;">
+            <div style="display: flex; padding-top: 1rem;">
+                <a href="{% url 'profile' %}?username={{ user.user.username }}"><img src="{{ user.user.stackoverflowuser.profile_pic.url }}" style="width: 5.2rem; height: 5.2rem; border-radius: 10%;"></a>
+            <div style="display: flex; flex-direction: column; justify-content: space-between;
+            margin-left: 1rem;">
+                <a href="{% url 'profile' %}?username={{ user.user.username }}" style="color: black; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; text-decoration: none;">{{ user.user.username }}</a>
+            
+            
             <!-- Display follow status -->
             {% if not user.user.username == request.user.username %}
                 {% if user.is_following %}
-                    <a href="{% url 'unfollow' user.user.username %}">Unfollow</a>
+                    <a href="{% url 'unfollow' user.user.username %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+                    padding: 0.25rem;
+                    background-color: red;
+                    color: white;
+                    font-weight: 600;
+                    text-decoration: none;
+                    width: 5.6rem;">Unfollow</a>
                     <!-- Display unfollow link if currently following -->
                 {% else %}
-                    <a href="{% url 'follow' user.user.username %}">Follow</a>
+                    <a href="{% url 'follow' user.user.username %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+                    padding: 0.25rem;
+                    background-color: #0a95ff;
+                    color: white;
+                    font-weight: 600;
+                    text-decoration: none;
+                    width: 4.15rem;">Follow</a>
                     <!-- Display follow link if not following -->
                 {% endif %}
-            {% endif %}
+                {% endif %}
+                <span>{% if user.is_following %}Following{% else %}Not Following{% endif %}</span>
+            </div>
+            </div>
+            <p style="margin-top: 0.5rem; margin-right: 2rem;"><b>About: </b>{{ user.user.stackoverflowuser.about }}</p>
+                <p style="margin-top: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem;"><b>Join Date:</b> {{ user.user.stackoverflowuser.join_date }}</p>
         </li>
     {% endfor %}
     </ul>
-    <a href="{% url 'feed' %}">Go back to Feed</a>
 {% endblock %}

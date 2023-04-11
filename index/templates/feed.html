@@ -1,25 +1,63 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Stack OverFlow - Where Developers Learn, Share, & Build Careers{% endblock %}
 
 {% block content %}
-<a href="{% url 'users' %}">Go to Users</a>
-<a href="{% url 'following' %}">Go to Following</a>
-<a href="{% url 'followers' %}">Go to Followers</a>
-<a href="{% url 'ask_question' %}">Ask a Question</a>
-<a href="{% url 'my_questions' %}">My Questions</a>
-<h2>Questions:</h2>
-<span><a href="{% url 'feed' %}">Relevant</a></span>
-<span><a href="{% url 'new' %}">New</a></span>
-<span><a href="{% url 'top' %}">Top</a></span>
-<ul>
+<a href="{% url 'ask_question' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+padding: 0.5rem;
+background-color: #0a95ff;
+color: white;
+font-weight: 600;
+text-decoration: none;
+margin-left: 30rem;
+margin-right: 1rem;">Ask Question</a>
+<a href="{% url 'my_questions' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+padding: 0.5rem;
+background-color: #fbf3d5;
+color: black;
+font-weight: 600;
+text-decoration: none;">My Questions</a>
+<div>
+
+
+</div>
+
+<div style="margin-bottom: 1rem;
+margin-top: 2rem;">
+<span style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-right: 25.65rem;
+    font-weight: 900;
+    font-size: 1.8rem;">Questions</span>
+<span><a href="{% url 'feed' %}" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; padding: 0.5rem; color: black; text-decoration: none; background-color: #e3e6e8;">Relevant</a></span>
+<span><a href="{% url 'new' %}" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; padding: 0.5rem; color: black; text-decoration: none; background-color: #e3e6e8;">New</a></span>
+<span><a href="{% url 'top' %}" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; padding: 0.5rem; color: black; text-decoration: none; background-color: #e3e6e8;">Top</a></span>
+</div>
+<ul style="list-style-type: none; margin-right: 1.5rem; padding-top: 0.5rem;">
     {% for question in questions %}
-    <li>
-        {{ question.points }} votes
-        <a href="{% url 'question' %}?question_id={{question.id }}">
+    <li style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 1px 0px 0px,
+    rgba(27, 31, 35, 0.15) 0px -1px 0px 0px;
+    padding-top: 1.5rem; padding-bottom: 1.5rem;">
+        <div style="display: flex; flex-direction: row;">
+            <div style="min-width: 7.5rem; margin-left: 3rem;">
+        <p>{{ question.points }} votes</p>
+        <p style="margin-top: 0.4rem;">{{ question.num_answers }} answers</p>
+    </div>
+        <a href="{% url 'question' %}?question_id={{question.id }}" style="text-decoration: none; color: #1e84d1;
+        font-weight: 600;
+        font-family:Arial, Helvetica, sans-serif;
+        font-size: 1.2rem;
+        padding-right: 1.5rem;">
             {{ question.title }}
         </a>
-        asked by {{ question.user.username }} on {{ question.created_at|date:'d-m-y' }}
+    </div>
+    <p style="display: flex; justify-content: flex-end; margin-right: 2rem; margin-top: 0.5rem;" >
+        asked by<img src="{{ question.user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
+        style="width: 1rem; height: 1rem; margin-top: 0.15rem; margin-left: 1rem; margin-right: 1rem;">{{ question.user.username }} on {{ question.created_at|date:'d-m-y' }}
+        </p>
     </li>
     {% endfor %}
 </ul>

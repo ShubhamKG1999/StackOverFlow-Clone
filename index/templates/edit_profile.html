@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/ask_question.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Edit Profile</h1>
+    <form id="edit-profile-form" method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="about">About:</label>
+        <textarea id="about" name="about" rows="3">{{ initial_data.about }}</textarea>
+        <label for="link">Link:</label>
+        <input type="text" id="link" name="link" value="{{ initial_data.link }}">
+        <label for="profile_pic">Profile Picture:</label>
+        <input type="file" id="profile_pic" name="profile_pic">
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'profile' %}">Back to Profile</a>
+{% endblock %}
