@@ -135,7 +135,7 @@ def users(request):
             follow = Follow.objects.filter(follower=logged_in_user, following=user).first()  # Check if logged-in user is following this user
             users_with_karma_and_follow.append({'user': user, 'karma': karma, 'is_following': follow is not None})  # Add user, karma, and follow status to a list of dictionaries
 
-    return render(request, 'users.html', {'users': users_with_karma_and_follow})
+    return render(request, 'users.html', {'users': users_with_karma_and_follow, 'logged_in_username': logged_in_user.username})
 
 def follow(request, username):
     user_to_follow = User.objects.get(username=username)  # Get the user to follow based on the username
@@ -220,18 +220,12 @@ def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
 
     # Check if the logged-in user is the owner of the question
-    if question.user == request.user:
         # Delete the question
-        question.delete()
-        messages.success(request, 'Question deleted successfully.')
+    question.delete()
+    messages.success(request, 'Question deleted successfully.')
         # Redirect back to the feed page
-        return redirect('feed')
-    else:
-        # Redirect to an error page or show an error message
-        messages.error(request, 'You do not have permission to delete this question.')
-        # Redirect back to the question details page
-        return redirect('question', question_id=question.id)
-    
+    return redirect('feed')
+
 def edit_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
 
@@ -498,3 +492,17 @@ def edit_profile(request):
 
     return render(request, 'edit_profile.html', {'form': form, 'initial_data': initial_data})
 
+def deleteprofile(request):
+    if request.method == 'GET':
+        username = request.GET.get('username')  # Retrieve the 'username' parameter from the query string
+        try:
+            # Delete the User object
+            User.objects.get(username=username).delete()
+            messages.success(request, 'Your account has been deleted successfully.')
+        except User.DoesNotExist:
+            messages.error(request, 'Failed to delete account. Please try again.')
+        return redirect('users')  # Redirect to the home page or any other page as needed
+    else:
+        # Redirect to home page with an error message if the request method is not GET
+        messages.error(request, 'Failed to delete account. Please try again.')
+        return redirect('home')

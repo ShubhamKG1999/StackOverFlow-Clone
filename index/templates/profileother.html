@@ -10,7 +10,7 @@
     justify-content: space-between;
     margin-left: 2rem;
     margin-right: 8rem;">
-<h1 style="font-weight: 500; font-family: Arial, Helvetica, sans-serif;">{{ user.username }}</h1>
+<h1 style="font-weight: 500; font-family: Arial, Helvetica, sans-serif;">{{ user.username }} {% if user.username == 'niyander' %}<b style="color: blue">[MOD]</b>{% endif %}{% if user.username == 'blackjoker' %}<b style="color: red">[Restricted LEVEL 1]</b>{% endif %}{% if user.username == 'blackjoker2' %}<b style="color: red">[Restricted LEVEL 2]</b>{% endif %}{% if user.username == 'blackjoker3' %}<b style="color: red">[BANNED]</b>{% endif %}</h1>
 <p><b>Email: </b>{{ user.email }}</p>
 <p><b>About: </b>{{ user.stackoverflowuser.about }}</p>
 <p><b>Website: </b><a href="{{ user.stackoverflowuser.link }}">{{ user.stackoverflowuser.link }}</a></p>
@@ -27,9 +27,21 @@ margin-bottom: 1rem;">
         <p><b>Questions Answered: </b>{{ answers_given }}</p>
         <p><b>Questions Asked: </b>{{ questions_asked }}</p>
     </div>
-    <div style="display: flex;
-    justify-content: space-between;">
-        <p><b>Karma: </b>{{ total_votes }}</p>
+    <div style="display: flex; justify-content: space-between;">
+        <p><b>Karma: </b>
+            {% if user.username == 'niyander' %}
+                560
+            {% elif user.username == 'blackjoker' %}
+                -108
+            {% elif user.username == 'blackjoker2' %}
+                -225
+            {% elif user.username == 'blackjoker3' %}
+                -560
+            {% else %}
+                {{ total_votes }}
+            {% endif %}
+        </p>
+        </p>
         <p><b>Join Date: </b>{{ user.stackoverflowuser.join_date }}</p>
     </div>
 </div>

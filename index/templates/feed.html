@@ -4,22 +4,23 @@
 {% block title %}Stack OverFlow - Where Developers Learn, Share, & Build Careers{% endblock %}
 
 {% block content %}
-<a href="{% url 'ask_question' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-padding: 0.5rem;
-background-color: #0a95ff;
-color: white;
-font-weight: 600;
-text-decoration: none;
-margin-left: 30rem;
-margin-right: 1rem;">Ask Question</a>
-<a href="{% url 'my_questions' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-padding: 0.5rem;
-background-color: #fbf3d5;
-color: black;
-font-weight: 600;
-text-decoration: none;">My Questions</a>
-<div>
 
+<div style="display: flex; justify-content: flex-end; margin-right: 1.5rem;">
+
+    {% if user.username != 'blackjoker' and user.username != 'blackjoker2' and user.username != 'blackjoker3' %}<a href="{% url 'ask_question' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    padding: 0.5rem;
+    background-color: #0a95ff;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 1rem;">Ask Question</a>
+    {% endif %}
+    <a href="{% url 'my_questions' %}" style="box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    padding: 0.5rem;
+    background-color: #fbf3d5;
+    color: black;
+    font-weight: 600;
+    text-decoration: none;">My Questions</a>
 
 </div>
 

@@ -160,6 +160,14 @@
 <p>Posted by:<img src="{{ question.user.stackoverflowuser.profile_pic.url }}" alt="Profile Picture"
     style="width: 1rem; height: 1rem; margin-top: 0.15rem; margin-left: 0.5rem; margin-right: 0.5rem;">{{ question.user.username }}</p>
 </div> -->
+{% if user.username == 'niyander' %}
+<div class="editing">
+    <form method="post" action="{% url 'delete_question' question_id=question.id %}">
+        {% csrf_token %}
+        <input type="submit" value="Delete" class="delete">
+    </form>
+</div>
+{% endif %}
 
 <!-- Question vote form -->
 <div class="detailing" style="display: flex; flex-direction: row; justify-content: flex-end;
@@ -193,6 +201,7 @@
 
 
 <!-- Add comment form -->
+{% if user.username != 'blackjoker2' and user.username != 'blackjoker3' %}
 <form method="post" action="{% url 'add_comment' question_id=question.id %}" style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 4rem;">
     {% csrf_token %}
     <input type="hidden" name="question_id" value="{{ question.id }}" style="display: none;">
@@ -202,11 +211,12 @@
     </button>
 </form>
 
+{% endif %}
 
 
 
 {% if not user_answered %}
-
+{% if user.username != 'blackjoker3' %}
 <!-- Add answer form -->
 <h3>Add Answer</h3>
 <form method="post" action="{% url 'add_answer' question_id=question.id %}" style="background-color: #f8f9fa; padding: 10px; border-radius: 5px;
@@ -215,6 +225,7 @@ margin-right: 4rem;">
     <textarea name="answer_text" rows="4" cols="50" style="resize: none; border: 1px solid #ced4da; padding: 5px; width: 100%; margin-bottom: 10px; border-radius: 3px;"></textarea>
     <input type="submit" value="Answer" style="background-color: #007bff; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
 </form>
+{% endif %}
 
 {% else %}
 <p style="margin-top: 0.5rem;

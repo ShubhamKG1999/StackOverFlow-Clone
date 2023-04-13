@@ -31,7 +31,8 @@ urlpatterns = [
     path('answer/<int:answer_id>/vote/', views.vote_answer, name='vote_answer'),
     path('question/<int:question_id>/', views.question_details, name='question_details'),
     path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'), 
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('deleteprofile/', views.deleteprofile, name='deleteprofile')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
